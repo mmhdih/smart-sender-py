@@ -1,35 +1,35 @@
 name: Build Portable EXE
 
-on:
-  push:
-    # با حذف نام شاخه، این اکشن با هر پوش روی هر شاخه‌ای اجرا می‌شود
-  pull_request:
-    # همچنین برای هر پول ریکوئستی اجرا می‌شود
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: List files (For Debugging)
+      run: dir /s
 
-      - name: Build with PyInstaller
-        run: |
-          pyinstaller --noconfirm --onefile --windowed --name "SmartSender" --paths "src" src/main.py
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
 
-      - name: Upload EXE Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SmartSender-Portable
-          path: dist/SmartSender.exe
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --noconfirm --onefile --windowed --name "SmartSender" src/main.py
+
+    - name: Upload EXE Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SmartSender-Portable
+        path: dist/SmartSender.exe
