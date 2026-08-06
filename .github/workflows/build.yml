@@ -1,0 +1,36 @@
+name: Build Portable EXE
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          # استفاده از آپشن noconsole برای مخفی کردن پنجره CMD و آپشن onefile برای پرتابل شدن
+          pyinstaller --noconfirm --onefile --windowed --name "SmartSender" --paths "src" src/main.py
+
+      - name: Upload EXE Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SmartSender-Portable
+          path: dist/SmartSender.exe
